@@ -2,21 +2,26 @@ plugins{
     id 'java'
 }
 
+group 'tuya.automatizacion'
+version '1.0.SNAPSHOT'
+
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(17)
     }
 }
 
+defaultTasks 'clean'
+
 repositories {
-    maven{
-        url 'https://repo.maven.apache.org/maven2'
-    }
+    mavenCentral()
 }
 
 dependencies {
-    testImplementation 'com.intuit.karate:karate-junit5:1.4.1' // Usa la última versión estable
-    testImplementation 'net.masterthought:cucumber-reporting:5.8.2' // Última versión
+    
+    implementation 'org.json:json:20210307'
+    testImplementation("com.intuit.karate:karate-junit5:1.4.1")
+    testImplementation 'net.masterthought:cucumber-reporting:5.8.2'
 }
 
 test{
@@ -29,6 +34,34 @@ sourceSets{
         resources{
             srcDir file('src/test/java')
             exclude '**/*.java'
+        }
+    }
+}
+
+tasks.withType(Test) {
+    finalizedBy 'generateCucumberReports'
+}
+
+
+tasks.register('renameTxtToJson') {
+    doLast {
+        file('build/karate-reports').listFiles().each { file ->
+            if (file.name.endsWith('.txt')) {
+                file.renameTo(new File(file.parent, file.name.replace('.txt', '.json')))
+                }
+            }
+        }
+}
+
+
+tasks.register('generateCucumberReports') {
+    dependsOn 'test'
+    dependsOn 'renameTxtToJson'
+    doLast {
+        javaexec {
+            mainClass = "GenerarReporte"
+            classpath = sourceSets.test.runtimeClasspath
+            workingDir = projectDir
         }
     }
 }

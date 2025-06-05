@@ -1,5 +1,5 @@
 function fn() {
     return {
-        baseUrl: 'https://api.demoblaze.com'
+        baseUrl: 'https://gopass.tuya.com.co/'
     };
 }

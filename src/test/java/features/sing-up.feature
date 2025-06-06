@@ -1,38 +1,10 @@
-Feature: Validate the registration and login functionalities of the demoblaze.com page
+Feature: Prueba API
 
-  Scenario: Register new user
+  Scenario: List users page 2
     Given url baseUrl
-    And path '/_next/data/2-4IcbjtcS4ubIbkYsJfb/es/management.json'
+    And path '/api/users'
+    And param page = 2
+    And header User-Agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
     When method get
     Then status 200
-    And match response.__N_SSG == true
-    # * def actualResponse = response
-    # * def expectedResponse = ""
-    # * karate.match(actualResponse, expectedResponse)
-
-  # Scenario: Register user has been created
-  #   Given url baseUrl
-  #   * def validateRequest = read('classpath:request/requestSingUp.json')
-  #   And path '/v1/'
-  #   And request validateRequest
-  #   When method post
-  #   Then status 200
-  #   And match response.errorMessage == "This user already exist."
-
-  # Scenario: Log in with correct username and password
-  #   Given url baseUrl
-  #   * def validateRequest = read('classpath:request/requestSingUp.json')
-  #   And path '/v1/'
-  #   And request validateRequest
-  #   When method post
-  #   Then status 200
-  #   And match response.errorMessage == null
-
-  # Scenario: Log in with incorrect username and password
-  #   Given url baseUrl
-  #   * def validateRequest = read('classpath:request/BadRequestSingUp.json')
-  #   And path '/login'
-  #   And request validateRequest
-  #   When method post
-  #   Then status 200
-  #   And match response.errorMessage == "User does not exist."
+    And match response.page == 2

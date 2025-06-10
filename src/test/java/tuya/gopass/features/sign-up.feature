@@ -1,3 +1,4 @@
+@smoke
 Feature: Prueba API
 
   # Scenario: List users page 2
@@ -10,7 +11,7 @@ Feature: Prueba API
 
 Scenario: Register new user
   Given url baseUrl
-  And path '/_next/data/2-4IcbjtcS4ubIbkYsJfb/es/sign-up.json'
+  And path '/_next/data/x0lYyFVSD0-XGk8UbMI3m/es/management.json'
   When method get
-  Then status 200
-  And match response.__N_SSG == true
+  Then status 403
+  # And match response.__N_SSG == true

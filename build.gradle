@@ -11,35 +11,27 @@ java {
     }
 }
 
-defaultTasks = ['clean']
-
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation 'org.json:json:20210307'
-    implementation 'commons-io:commons-io:2.5' //2.16.1
+    implementation 'org.json:json:20240303'
+    implementation 'commons-io:commons-io:2.16.1'
     testImplementation 'com.intuit.karate:karate-junit5:1.4.1'
-    testImplementation 'net.masterthought:cucumber-reporting:5.7.2' //5.8.2
+    testImplementation 'net.masterthought:cucumber-reporting:5.8.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
 }
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
-    // options.compileArgs << '-Werror'
 }
 
 test {
     useJUnitPlatform()
     systemProperty 'file.encoding', 'UTF-8'
-    systemProperty 'karate.env', System.properties.getProperty('karate.env')
-    systemProperty 'karate.options', System.properties.getProperty('karate.options')
-
-    // useJUnitPlatform()
-    // systemProperty 'karate.env', System.properties.getProperty('karate.env')
-    // systemProperty 'karate.report.dir', 'build/karate-reports'
-    // systemProperty 'karate.output.html.report', 'true'
-    // outputs.upToDateWhen { false }
+    systemProperties(System.properties)
+    outputs.upToDateWhen { false }
 }
 
 sourceSets {
@@ -51,19 +43,17 @@ sourceSets {
     }
 }
 
-// compileJava.options.encoding = 'UTF-8'
-// compileTestJava.options.encoding = 'UTF-8'
-// tasks.withType(JavaCompile) {
-//     options.encoding = 'UTF-8'
-// }
-
-// tasks.register('generateCucumberReports') {
-//     dependsOn 'test'
-//     doLast {
-//         javaexec {
-//             main = 'GenerarReporte'
-//             classpath = sourceSets.test.runtimeClasspath
-//             workingDir = projectDir
-//         }
-//     }
-// }
+tasks.register('generateCucumberReports', JavaExec) {
+    dependsOn 'test'
+    group = 'Reporting'
+    description = 'Genera reportes de Cucumber a partir de los resultados de Karate'
+    mainClass = 'tuya.KarateTests'
+    classpath = sourceSets.test.runtimeClasspath
+    args = []
+    doFirst {
+        def jsonFiles = fileTree(dir: 'build/karate-reports', include: '**/*.json')
+        if (jsonFiles.isEmpty()) {
+            throw new GradleException("No se encontraron archivos JSON en build/karate-reports. Asegúrate de que las pruebas se ejecutaron correctamente.")
+        }
+    }
+}
